@@ -7,7 +7,7 @@ import pandas as pd
 # =========================================================
 
 st.set_page_config(
-    page_title="Tính Thuế TNCN",
+    page_title="Hệ thống phân tích thuế TNCN",
     page_icon="💰",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -17,39 +17,22 @@ st.set_page_config(
 # =========================================================
 # 2. CSS GIAO DIỆN
 # =========================================================
-# Lưu ý:
-# - Không sử dụng HTML
-# - Không sử dụng <div>
-# - Không sử dụng <h1>
-# - Không sử dụng unsafe_allow_html
-# =========================================================
 
 st.markdown(
     """
     <style>
 
-    /* Nền chính */
-
     .stApp {
         background-color: #f4f7fb;
     }
-
-
-    /* Sidebar */
 
     [data-testid="stSidebar"] {
         background-color: #0f2747;
     }
 
-
-    /* Chữ trong Sidebar */
-
     [data-testid="stSidebar"] * {
         color: white;
     }
-
-
-    /* Các ô Metric */
 
     [data-testid="stMetric"] {
         background-color: white;
@@ -59,23 +42,15 @@ st.markdown(
         box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
     }
 
-
-    /* Input */
-
     [data-testid="stNumberInput"] {
         background-color: white;
-        padding: 10px;
         border-radius: 12px;
     }
-
-
-    /* Nút */
 
     .stButton button {
         border-radius: 10px;
         font-weight: 600;
     }
-
 
     </style>
     """,
@@ -92,8 +67,8 @@ with st.sidebar:
     st.title("💰 TNCN")
 
     st.write(
-        "Ứng dụng tính thuế "
-        "thu nhập cá nhân"
+        "Hệ thống phân tích "
+        "thu nhập và thuế TNCN"
     )
 
     st.divider()
@@ -104,8 +79,11 @@ with st.sidebar:
         "Chọn chức năng",
         [
             "🏠 Tổng quan",
-            "🧮 Tính thuế TNCN",
-            "📊 Chi tiết thu nhập",
+            "📝 Thông tin thu nhập",
+            "🏦 Phân tích bảo hiểm",
+            "📉 Phân tích giảm trừ",
+            "🧮 Phân tích thuế",
+            "📊 Báo cáo chi tiết",
             "📚 Biểu thuế"
         ]
     )
@@ -113,54 +91,93 @@ with st.sidebar:
     st.divider()
 
     st.info(
-        "Công cụ hỗ trợ tính toán:\n\n"
-        "• Lương Gross\n\n"
-        "• Bảo hiểm\n\n"
-        "• Thu nhập tính thuế\n\n"
-        "• Thuế TNCN\n\n"
-        "• Lương Net"
+        "Hệ thống hỗ trợ:\n\n"
+        "• Tổng hợp thu nhập Gross\n\n"
+        "• Phân tích bảo hiểm\n\n"
+        "• Tính giảm trừ\n\n"
+        "• Tính thu nhập tính thuế\n\n"
+        "• Tính thuế TNCN\n\n"
+        "• Tính lương Net"
     )
 
 
 # =========================================================
-# 4. TIÊU ĐỀ CHÍNH
+# 4. TIÊU ĐỀ
 # =========================================================
 
 st.title(
-    "💰 ỨNG DỤNG TÍNH THUẾ THU NHẬP CÁ NHÂN"
+    "💰 HỆ THỐNG PHÂN TÍCH THUẾ THU NHẬP CÁ NHÂN"
 )
 
 st.caption(
-    "Công cụ hỗ trợ tính toán "
-    "Lương Gross - Thuế TNCN - Lương Net"
+    "Phân tích chi tiết từ thu nhập thành phần "
+    "đến Lương Gross - Thuế TNCN - Lương Net"
 )
 
 st.divider()
 
 
 # =========================================================
-# 5. NHẬP THÔNG TIN
+# 5. NHẬP THÔNG TIN THU NHẬP
 # =========================================================
 
 st.header("📝 Thông tin thu nhập")
+
+st.write(
+    "Nhập các khoản thu nhập hàng tháng. "
+    "Hệ thống sẽ tự động tổng hợp thành tổng thu nhập Gross."
+)
+
 
 col1, col2 = st.columns(2)
 
 
 with col1:
 
-    gross_salary = st.number_input(
-        "💵 Lương Gross (đồng/tháng)",
+    st.subheader("💵 Thu nhập chính")
+
+    luong_co_ban = st.number_input(
+        "Lương cơ bản (đồng/tháng)",
         min_value=0,
-        value=30000000,
-        step=1000000
+        value=20000000,
+        step=500000
+    )
+
+    lam_them = st.number_input(
+        "Tiền làm thêm giờ (đồng/tháng)",
+        min_value=0,
+        value=0,
+        step=500000
+    )
+
+    thuong = st.number_input(
+        "Tiền thưởng (đồng/tháng)",
+        min_value=0,
+        value=0,
+        step=500000
     )
 
 
 with col2:
 
+    st.subheader("💰 Thu nhập bổ sung")
+
+    phu_cap = st.number_input(
+        "Phụ cấp (đồng/tháng)",
+        min_value=0,
+        value=0,
+        step=500000
+    )
+
+    thu_nhap_khac = st.number_input(
+        "Thu nhập khác (đồng/tháng)",
+        min_value=0,
+        value=0,
+        step=500000
+    )
+
     dependents = st.number_input(
-        "👨‍👩‍👧‍👦 Số người phụ thuộc",
+        "Số người phụ thuộc",
         min_value=0,
         value=0,
         step=1
@@ -168,7 +185,20 @@ with col2:
 
 
 # =========================================================
-# 6. TÍNH BẢO HIỂM
+# 6. TỔNG HỢP THU NHẬP GROSS
+# =========================================================
+
+gross_salary = (
+    luong_co_ban
+    + lam_them
+    + thuong
+    + phu_cap
+    + thu_nhap_khac
+)
+
+
+# =========================================================
+# 7. BẢO HIỂM
 # =========================================================
 
 BHXH = gross_salary * 0.08
@@ -185,7 +215,7 @@ insurance = (
 
 
 # =========================================================
-# 7. TÍNH GIẢM TRỪ
+# 8. GIẢM TRỪ
 # =========================================================
 
 personal_deduction = 15500000
@@ -197,7 +227,7 @@ dependent_deduction = (
 
 
 # =========================================================
-# 8. TÍNH THU NHẬP TÍNH THUẾ
+# 9. THU NHẬP TÍNH THUẾ
 # =========================================================
 
 taxable_income = (
@@ -214,7 +244,7 @@ if taxable_income < 0:
 
 
 # =========================================================
-# 9. HÀM TÍNH THUẾ TNCN
+# 10. HÀM TÍNH THUẾ
 # =========================================================
 
 def calculate_tax(income):
@@ -232,6 +262,7 @@ def calculate_tax(income):
         tax = (
             10000000
             * 0.05
+
             + (
                 income
                 - 10000000
@@ -304,7 +335,7 @@ def calculate_tax(income):
 
 
 # =========================================================
-# 10. TÍNH THUẾ
+# 11. TÍNH THUẾ
 # =========================================================
 
 tax = calculate_tax(
@@ -313,7 +344,7 @@ tax = calculate_tax(
 
 
 # =========================================================
-# 11. TÍNH LƯƠNG NET
+# 12. TÍNH LƯƠNG NET
 # =========================================================
 
 net_salary = (
@@ -324,7 +355,7 @@ net_salary = (
 
 
 # =========================================================
-# 12. TÍNH TỶ LỆ LƯƠNG NET
+# 13. TỶ LỆ
 # =========================================================
 
 if gross_salary > 0:
@@ -340,43 +371,22 @@ else:
 
 
 # =========================================================
-# 13. TRANG TỔNG QUAN
+# 14. TỔNG QUAN
 # =========================================================
 
 if menu == "🏠 Tổng quan":
 
     st.header(
-        "📊 Tổng quan tài chính"
+        "🏠 Tổng quan tài chính"
     )
 
 
     # -----------------------------------------------------
-    # LƯƠNG THỰC NHẬN
-    # -----------------------------------------------------
-
-    st.subheader(
-        "💵 Lương thực nhận"
-    )
-
-
-    st.success(
-        f"💰 LƯƠNG NET: "
-        f"{net_salary:,.0f} đồng/tháng"
-    )
-
-
-    st.caption(
-        "Số tiền ước tính nhận được "
-        "sau khi trừ bảo hiểm và thuế TNCN."
-    )
-
-
-    # -----------------------------------------------------
-    # KPI
+    # KẾT QUẢ CHÍNH
     # -----------------------------------------------------
 
     st.subheader(
-        "📌 Các chỉ tiêu chính"
+        "💰 Kết quả tổng hợp"
     )
 
 
@@ -386,32 +396,32 @@ if menu == "🏠 Tổng quan":
     with col1:
 
         st.metric(
-            label="💵 Lương Gross",
-            value=f"{gross_salary:,.0f} đ"
+            "💵 Tổng thu nhập Gross",
+            f"{gross_salary:,.0f} đ"
         )
 
 
     with col2:
 
         st.metric(
-            label="🏦 Tổng bảo hiểm",
-            value=f"{insurance:,.0f} đ"
+            "🏦 Tổng bảo hiểm",
+            f"{insurance:,.0f} đ"
         )
 
 
     with col3:
 
         st.metric(
-            label="📊 Thu nhập tính thuế",
-            value=f"{taxable_income:,.0f} đ"
+            "💸 Thuế TNCN",
+            f"{tax:,.0f} đ"
         )
 
 
     with col4:
 
         st.metric(
-            label="💸 Thuế TNCN",
-            value=f"{tax:,.0f} đ"
+            "💰 Lương Net",
+            f"{net_salary:,.0f} đ"
         )
 
 
@@ -419,11 +429,18 @@ if menu == "🏠 Tổng quan":
 
 
     # -----------------------------------------------------
-    # TỶ LỆ LƯƠNG NET
+    # LƯƠNG NET
     # -----------------------------------------------------
 
     st.subheader(
-        "📈 Tỷ lệ lương thực nhận"
+        "💵 Lương thực nhận"
+    )
+
+
+    st.success(
+        f"💰 Sau khi trừ bảo hiểm và thuế, "
+        f"lương thực nhận dự kiến là "
+        f"**{net_salary:,.0f} đồng/tháng**."
     )
 
 
@@ -438,19 +455,79 @@ if menu == "🏠 Tổng quan":
     )
 
 
-    st.write(
-        f"Lương thực nhận chiếm "
-        f"**{net_ratio * 100:.1f}%** "
-        f"so với lương Gross."
+    st.caption(
+        f"Lương Net chiếm "
+        f"{net_ratio * 100:.1f}% "
+        f"tổng thu nhập Gross."
     )
 
 
+    st.divider()
+
+
     # -----------------------------------------------------
-    # THÔNG TIN NGƯỜI PHỤ THUỘC
+    # CƠ CẤU THU NHẬP
     # -----------------------------------------------------
 
     st.subheader(
-        "👨‍👩‍👧‍👦 Thông tin người phụ thuộc"
+        "📊 Cơ cấu thu nhập"
+    )
+
+
+    income_data = pd.DataFrame({
+
+        "Khoản thu nhập": [
+
+            "Lương cơ bản",
+
+            "Làm thêm giờ",
+
+            "Thưởng",
+
+            "Phụ cấp",
+
+            "Thu nhập khác"
+
+        ],
+
+        "Số tiền": [
+
+            luong_co_ban,
+
+            lam_them,
+
+            thuong,
+
+            phu_cap,
+
+            thu_nhap_khac
+
+        ]
+
+    })
+
+
+    st.bar_chart(
+        income_data.set_index(
+            "Khoản thu nhập"
+        )
+    )
+
+
+# =========================================================
+# 15. THÔNG TIN THU NHẬP
+# =========================================================
+
+elif menu == "📝 Thông tin thu nhập":
+
+    st.header(
+        "📝 Phân tích các khoản thu nhập"
+    )
+
+
+    st.info(
+        "Tổng thu nhập Gross được tổng hợp "
+        "từ các khoản thu nhập bạn đã nhập."
     )
 
 
@@ -460,175 +537,112 @@ if menu == "🏠 Tổng quan":
     with col1:
 
         st.metric(
-            label="Số người phụ thuộc",
-            value=f"{dependents:.0f} người"
+            "Lương cơ bản",
+            f"{luong_co_ban:,.0f} đ"
+        )
+
+        st.metric(
+            "Tiền làm thêm",
+            f"{lam_them:,.0f} đ"
+        )
+
+        st.metric(
+            "Tiền thưởng",
+            f"{thuong:,.0f} đ"
         )
 
 
     with col2:
 
         st.metric(
-            label="Giảm trừ người phụ thuộc",
-            value=f"{dependent_deduction:,.0f} đ"
+            "Phụ cấp",
+            f"{phu_cap:,.0f} đ"
         )
-
-
-    # -----------------------------------------------------
-    # TÌNH TRẠNG THUẾ
-    # -----------------------------------------------------
-
-    st.subheader(
-        "🔔 Tình trạng thuế"
-    )
-
-
-    if taxable_income == 0:
-
-        st.success(
-            "✅ Bạn không phát sinh "
-            "thuế TNCN theo công thức hiện tại."
-        )
-
-    else:
-
-        st.warning(
-            f"⚠️ Thu nhập tính thuế: "
-            f"{taxable_income:,.0f} đồng/tháng."
-        )
-
-
-# =========================================================
-# 14. TRANG TÍNH THUẾ
-# =========================================================
-
-elif menu == "🧮 Tính thuế TNCN":
-
-    st.header(
-        "🧮 Tính toán thuế TNCN"
-    )
-
-
-    st.subheader(
-        "📥 Thông tin đầu vào"
-    )
-
-
-    col1, col2 = st.columns(2)
-
-
-    with col1:
 
         st.metric(
-            "💵 Lương Gross",
+            "Thu nhập khác",
+            f"{thu_nhap_khac:,.0f} đ"
+        )
+
+        st.metric(
+            "Tổng Gross",
             f"{gross_salary:,.0f} đ"
         )
 
 
-    with col2:
-
-        st.metric(
-            "👨‍👩‍👧‍👦 Người phụ thuộc",
-            f"{dependents:.0f} người"
-        )
-
-
     st.divider()
 
 
     st.subheader(
-        "📉 Các khoản khấu trừ"
+        "📊 Tỷ trọng từng khoản thu nhập"
     )
 
 
-    col1, col2, col3 = st.columns(3)
+    if gross_salary > 0:
+
+        income_ratio = pd.DataFrame({
+
+            "Khoản thu nhập": [
+
+                "Lương cơ bản",
+
+                "Làm thêm",
+
+                "Thưởng",
+
+                "Phụ cấp",
+
+                "Thu nhập khác"
+
+            ],
+
+            "Tỷ trọng (%)": [
+
+                luong_co_ban
+                / gross_salary
+                * 100,
+
+                lam_them
+                / gross_salary
+                * 100,
+
+                thuong
+                / gross_salary
+                * 100,
+
+                phu_cap
+                / gross_salary
+                * 100,
+
+                thu_nhap_khac
+                / gross_salary
+                * 100
+
+            ]
+
+        })
 
 
-    with col1:
-
-        st.metric(
-            "🏦 BHXH",
-            f"{BHXH:,.0f} đ"
+        st.dataframe(
+            income_ratio,
+            use_container_width=True,
+            hide_index=True
         )
-
-
-    with col2:
-
-        st.metric(
-            "🏥 BHYT",
-            f"{BHYT:,.0f} đ"
-        )
-
-
-    with col3:
-
-        st.metric(
-            "🛡️ BHTN",
-            f"{BHTN:,.0f} đ"
-        )
-
-
-    st.divider()
-
-
-    st.subheader(
-        "📊 Kết quả tính thuế"
-    )
-
-
-    col1, col2, col3 = st.columns(3)
-
-
-    with col1:
-
-        st.metric(
-            "Tổng bảo hiểm",
-            f"{insurance:,.0f} đ"
-        )
-
-
-    with col2:
-
-        st.metric(
-            "Thu nhập tính thuế",
-            f"{taxable_income:,.0f} đ"
-        )
-
-
-    with col3:
-
-        st.metric(
-            "Thuế TNCN",
-            f"{tax:,.0f} đ"
-        )
-
-
-    st.divider()
-
-
-    st.success(
-        f"💰 Lương thực nhận "
-        f"(Lương Net): "
-        f"{net_salary:,.0f} đồng/tháng"
-    )
 
 
 # =========================================================
-# 15. TRANG CHI TIẾT THU NHẬP
+# 16. PHÂN TÍCH BẢO HIỂM
 # =========================================================
 
-elif menu == "📊 Chi tiết thu nhập":
+elif menu == "🏦 Phân tích bảo hiểm":
 
     st.header(
-        "📊 Chi tiết thu nhập"
+        "🏦 Phân tích các khoản bảo hiểm"
     )
 
 
-    # -----------------------------------------------------
-    # BẢO HIỂM
-    # -----------------------------------------------------
-
     st.subheader(
-        "🏦 Chi tiết bảo hiểm"
+        "📊 Chi tiết bảo hiểm"
     )
 
 
@@ -638,7 +652,7 @@ elif menu == "📊 Chi tiết thu nhập":
     with col1:
 
         st.metric(
-            "BHXH (8%)",
+            "BHXH - 8%",
             f"{BHXH:,.0f} đ"
         )
 
@@ -646,7 +660,7 @@ elif menu == "📊 Chi tiết thu nhập":
     with col2:
 
         st.metric(
-            "BHYT (1.5%)",
+            "BHYT - 1.5%",
             f"{BHYT:,.0f} đ"
         )
 
@@ -654,7 +668,7 @@ elif menu == "📊 Chi tiết thu nhập":
     with col3:
 
         st.metric(
-            "BHTN (1%)",
+            "BHTN - 1%",
             f"{BHTN:,.0f} đ"
         )
 
@@ -670,12 +684,49 @@ elif menu == "📊 Chi tiết thu nhập":
     st.divider()
 
 
-    # -----------------------------------------------------
-    # GIẢM TRỪ
-    # -----------------------------------------------------
-
     st.subheader(
-        "📉 Chi tiết giảm trừ"
+        "📈 Tỷ lệ bảo hiểm trên Gross"
+    )
+
+
+    if gross_salary > 0:
+
+        insurance_ratio = (
+            insurance
+            / gross_salary
+        )
+
+    else:
+
+        insurance_ratio = 0
+
+
+    st.progress(
+        min(
+            max(
+                insurance_ratio,
+                0.0
+            ),
+            1.0
+        )
+    )
+
+
+    st.write(
+        f"Tổng bảo hiểm chiếm "
+        f"**{insurance_ratio * 100:.1f}%** "
+        f"tổng thu nhập Gross."
+    )
+
+
+# =========================================================
+# 17. PHÂN TÍCH GIẢM TRỪ
+# =========================================================
+
+elif menu == "📉 Phân tích giảm trừ":
+
+    st.header(
+        "📉 Phân tích các khoản giảm trừ"
     )
 
 
@@ -709,20 +760,166 @@ elif menu == "📊 Chi tiết thu nhập":
     st.divider()
 
 
-    # -----------------------------------------------------
-    # BẢNG CHI TIẾT
-    # -----------------------------------------------------
-
     st.subheader(
-        "🧾 Bảng chi tiết tính lương"
+        "🧮 Tính thu nhập tính thuế"
     )
 
 
-    data = pd.DataFrame({
+    deduction_data = pd.DataFrame({
 
         "Khoản mục": [
 
-            "Lương Gross",
+            "Tổng thu nhập Gross",
+
+            "Trừ: Tổng bảo hiểm",
+
+            "Trừ: Giảm trừ bản thân",
+
+            "Trừ: Giảm trừ người phụ thuộc",
+
+            "Thu nhập tính thuế"
+
+        ],
+
+        "Số tiền (đồng)": [
+
+            gross_salary,
+
+            insurance,
+
+            personal_deduction,
+
+            dependent_deduction,
+
+            taxable_income
+
+        ]
+
+    })
+
+
+    st.dataframe(
+        deduction_data,
+        use_container_width=True,
+        hide_index=True
+    )
+
+
+    st.success(
+        f"📊 Thu nhập tính thuế: "
+        f"**{taxable_income:,.0f} đồng/tháng**"
+    )
+
+
+# =========================================================
+# 18. PHÂN TÍCH THUẾ
+# =========================================================
+
+elif menu == "🧮 Phân tích thuế":
+
+    st.header(
+        "🧮 Phân tích thuế TNCN"
+    )
+
+
+    col1, col2 = st.columns(2)
+
+
+    with col1:
+
+        st.metric(
+            "Thu nhập tính thuế",
+            f"{taxable_income:,.0f} đ"
+        )
+
+
+    with col2:
+
+        st.metric(
+            "Thuế TNCN phải nộp",
+            f"{tax:,.0f} đ"
+        )
+
+
+    st.divider()
+
+
+    if taxable_income == 0:
+
+        st.success(
+            "✅ Bạn không phát sinh thuế TNCN "
+            "theo công thức hiện tại."
+        )
+
+    else:
+
+        st.warning(
+            f"⚠️ Thu nhập tính thuế của bạn là "
+            f"{taxable_income:,.0f} đồng/tháng."
+        )
+
+
+    st.subheader(
+        "📈 Tỷ lệ thuế trên tổng Gross"
+    )
+
+
+    if gross_salary > 0:
+
+        tax_ratio = (
+            tax
+            / gross_salary
+        )
+
+    else:
+
+        tax_ratio = 0
+
+
+    st.progress(
+        min(
+            max(
+                tax_ratio,
+                0.0
+            ),
+            1.0
+        )
+    )
+
+
+    st.write(
+        f"Thuế TNCN chiếm khoảng "
+        f"**{tax_ratio * 100:.2f}%** "
+        f"tổng thu nhập Gross."
+    )
+
+
+# =========================================================
+# 19. BÁO CÁO CHI TIẾT
+# =========================================================
+
+elif menu == "📊 Báo cáo chi tiết":
+
+    st.header(
+        "📊 Báo cáo phân tích thu nhập"
+    )
+
+
+    report = pd.DataFrame({
+
+        "Khoản mục": [
+
+            "Lương cơ bản",
+
+            "Tiền làm thêm",
+
+            "Tiền thưởng",
+
+            "Phụ cấp",
+
+            "Thu nhập khác",
+
+            "TỔNG THU NHẬP GROSS",
 
             "BHXH",
 
@@ -730,22 +927,32 @@ elif menu == "📊 Chi tiết thu nhập":
 
             "BHTN",
 
-            "Tổng bảo hiểm",
+            "TỔNG BẢO HIỂM",
 
             "Giảm trừ bản thân",
 
             "Giảm trừ người phụ thuộc",
 
-            "Thu nhập tính thuế",
+            "THU NHẬP TÍNH THUẾ",
 
-            "Thuế TNCN",
+            "THUẾ TNCN",
 
-            "Lương Net"
+            "LƯƠNG NET"
 
         ],
 
 
         "Số tiền (đồng)": [
+
+            luong_co_ban,
+
+            lam_them,
+
+            thuong,
+
+            phu_cap,
+
+            thu_nhap_khac,
 
             gross_salary,
 
@@ -773,14 +980,49 @@ elif menu == "📊 Chi tiết thu nhập":
 
 
     st.dataframe(
-        data,
+        report,
         use_container_width=True,
         hide_index=True
     )
 
 
+    st.divider()
+
+
+    st.subheader(
+        "📌 Tóm tắt kết quả"
+    )
+
+
+    col1, col2, col3 = st.columns(3)
+
+
+    with col1:
+
+        st.metric(
+            "Tổng Gross",
+            f"{gross_salary:,.0f} đ"
+        )
+
+
+    with col2:
+
+        st.metric(
+            "Tổng khấu trừ",
+            f"{insurance + tax:,.0f} đ"
+        )
+
+
+    with col3:
+
+        st.metric(
+            "Lương Net",
+            f"{net_salary:,.0f} đ"
+        )
+
+
 # =========================================================
-# 16. TRANG BIỂU THUẾ
+# 20. BIỂU THUẾ
 # =========================================================
 
 elif menu == "📚 Biểu thuế":
@@ -790,13 +1032,7 @@ elif menu == "📚 Biểu thuế":
     )
 
 
-    st.info(
-        "Thuế TNCN được tính theo "
-        "phương pháp lũy tiến từng phần."
-    )
-
-
-    tax_data = pd.DataFrame({
+    tax_table = pd.DataFrame({
 
         "Bậc": [
 
@@ -846,7 +1082,7 @@ elif menu == "📚 Biểu thuế":
 
 
     st.dataframe(
-        tax_data,
+        tax_table,
         use_container_width=True,
         hide_index=True
     )
@@ -856,18 +1092,26 @@ elif menu == "📚 Biểu thuế":
 
 
     st.subheader(
-        "🧮 Công thức tính"
+        "🧮 Công thức tổng quát"
     )
 
 
     st.info(
-        "Tổng bảo hiểm = BHXH + BHYT + BHTN"
+        "Tổng Gross = "
+        "Lương cơ bản + Làm thêm + Thưởng "
+        "+ Phụ cấp + Thu nhập khác"
+    )
+
+
+    st.info(
+        "Tổng bảo hiểm = "
+        "BHXH + BHYT + BHTN"
     )
 
 
     st.info(
         "Thu nhập tính thuế = "
-        "Lương Gross - Tổng bảo hiểm "
+        "Gross - Tổng bảo hiểm "
         "- Giảm trừ bản thân "
         "- Giảm trừ người phụ thuộc"
     )
@@ -875,18 +1119,17 @@ elif menu == "📚 Biểu thuế":
 
     st.info(
         "Lương Net = "
-        "Lương Gross - Tổng bảo hiểm "
-        "- Thuế TNCN"
+        "Gross - Tổng bảo hiểm - Thuế TNCN"
     )
 
 
 # =========================================================
-# 17. FOOTER
+# 21. FOOTER
 # =========================================================
 
 st.divider()
 
 st.caption(
-    "💰 Ứng dụng tính Thuế Thu nhập cá nhân "
+    "💰 Hệ thống phân tích Thuế Thu nhập cá nhân "
     "| Công cụ hỗ trợ tính toán và tham khảo"
 )
